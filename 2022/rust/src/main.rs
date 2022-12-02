@@ -1,4 +1,5 @@
 mod day1;
+mod day2;
 
 use std::fs::File;
 use std::io::{self, BufRead};
@@ -12,6 +13,7 @@ fn main() {
 
     let run_fn: fn(&[&str]) = match day.as_str() {
         "day1" => day1::run,
+        "day2" => day2::run,
         _ => panic!("Day not found!"),
     };
 
