@@ -46,33 +46,45 @@ fn part1(backpacks: &[Vec<u8>]) -> usize {
 use std::collections::HashMap;
 
 fn part2(backpacks: &[Vec<u8>]) -> usize {
-    let groups = backpacks.chunks(3);
+    // let groups = backpacks.chunks(3);
+    //
+    // let mut sum = 0;
+    //
+    // for group in groups {
+    //     // get unique items
+    //     let group: Vec<HashSet<&u8>> = group
+    //         .iter()
+    //         .map(|backpack| backpack.iter().collect::<HashSet<&u8>>())
+    //         .collect();
+    //
+    //     let mut unique_items: HashMap<u8, usize> = HashMap::new();
+    //
+    //     for backpack in group {
+    //         for priority in backpack {
+    //             unique_items
+    //                 .entry(*priority)
+    //                 .and_modify(|count| *count += 1)
+    //                 .or_insert(1);
+    //         }
+    //     }
+    //
+    //     let (priority, _) =unique_items.iter().find(|(_, count)| **count == 3).unwrap();
+    //     sum += *priority as usize;
+    // }
+    //
+    // sum
 
-    let mut sum = 0;
-
-    for group in groups {
-        // get unique items
-        let group: Vec<HashSet<&u8>> = group
+    backpacks.chunks(3).map(|group| {
+        *group
             .iter()
             .map(|backpack| backpack.iter().collect::<HashSet<&u8>>())
-            .collect();
-
-        let mut unique_items: HashMap<u8, usize> = HashMap::new();
-
-        for backpack in group {
-            for priority in backpack {
-                unique_items
-                    .entry(*priority)
-                    .and_modify(|count| *count += 1)
-                    .or_insert(1);
-            }
-        }
-
-        let (priority, _) =unique_items.iter().find(|(_, count)| **count == 3).unwrap();
-        sum += *priority as usize;
-    }
-
-    sum
+            .reduce(|a, b| a.intersection(&b).cloned().collect::<HashSet<&u8>>())
+            .unwrap()
+            .iter()
+            .cloned()
+            .next()
+            .unwrap() as usize
+    }).sum()
 }
 
 #[cfg(test)]
