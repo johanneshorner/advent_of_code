@@ -28,7 +28,8 @@ fn part1(calories_groups: &[Vec<usize>]) -> usize {
 fn part2(calories_groups: &[Vec<usize>]) -> usize {
     let mut calories: Vec<usize> = calories_groups
         .iter()
-        .map(|calories_group| calories_group.iter().sum::<usize>()).collect();
+        .map(|calories_group| calories_group.iter().sum::<usize>())
+        .collect();
 
     calories.sort();
 
@@ -39,14 +40,14 @@ fn part2(calories_groups: &[Vec<usize>]) -> usize {
 mod tests {
     use super::parse_input;
 
+    const INPUT_LINES: &'static [&'static str] = &[
+        "1000", "2000", "3000", "", "4000", "", "5000", "6000", "", "7000", "8000", "9000", "",
+        "10000",
+    ];
+
     #[test]
     fn part1() {
-        let input_lines = vec![
-            "1000", "2000", "3000", "", "4000", "", "5000", "6000", "", "7000", "8000", "9000", "",
-            "10000",
-        ];
-
-        let input = parse_input(&input_lines);
+        let input = parse_input(&INPUT_LINES);
         let result = super::part1(&input);
 
         assert_eq!(24000, result);
@@ -54,12 +55,7 @@ mod tests {
 
     #[test]
     fn part2() {
-        let input_lines = vec![
-            "1000", "2000", "3000", "", "4000", "", "5000", "6000", "", "7000", "8000", "9000", "",
-            "10000",
-        ];
-
-        let input = parse_input(&input_lines);
+        let input = parse_input(&INPUT_LINES);
         let result = super::part2(&input);
 
         assert_eq!(45000, result);
