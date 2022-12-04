@@ -43,8 +43,6 @@ fn part1(backpacks: &[Vec<u8>]) -> usize {
     sum
 }
 
-use std::collections::HashMap;
-
 fn part2(backpacks: &[Vec<u8>]) -> usize {
     // let groups = backpacks.chunks(3);
     //
