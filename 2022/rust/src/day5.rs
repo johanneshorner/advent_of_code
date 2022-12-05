@@ -18,18 +18,30 @@ fn parse_input(input_lines: &[&str]) -> (Vec<Vec<char>>, Vec<Move>) {
     let containers_lines = input_lines.next().unwrap();
     let moves_lines = input_lines.next().unwrap();
 
-    let mut containers_lines = containers_lines
+    let mut containers_chars: Vec<Vec<char>> = containers_lines
         .iter()
-        .map(|line| line.to_string())
-        .collect::<Vec<String>>();
-    containers_lines.reverse();
+        .map(|line| {
+            line.as_bytes()
+                .chunks(4)
+                .map(|chunk| {
+                    let chunk = unsafe { std::str::from_utf8_unchecked(chunk) };
+                    let chunk = chunk.replace("   ", "0");
+                    let chunk = chunk.replace(" ", "");
+                    let chunk = chunk.replace("[", "");
+                    let chunk = chunk.replace("]", "");
+                    chunk.chars().next().unwrap()
+                }).collect::<Vec<char>>()
+        })
+        .collect::<Vec<Vec<char>>>();
+    containers_chars.pop(); 
+    containers_chars.reverse();
 
     let mut containers = Vec::new();
 
-    for i in 0..containers_lines[0].len() {
+    for i in 0..containers_chars[0].len() {
         let mut stack = Vec::new();
-        for line in &containers_lines {
-            let c = line.chars().nth(i).unwrap();
+        for chars in &containers_chars {
+            let c = chars[i];
             if c != '0' {
                 stack.push(c);
             }
@@ -84,7 +96,9 @@ fn part2(input: &(Vec<Vec<char>>, Vec<Move>)) -> String {
 
     for Move { count, src, dest } in moves {
         let number_of_containers_to_move = containers[*src].len();
-        let containers_to_move = containers[*src].drain((number_of_containers_to_move - count)..).collect::<Vec<char>>();
+        let containers_to_move = containers[*src]
+            .drain((number_of_containers_to_move - count)..)
+            .collect::<Vec<char>>();
         containers[*dest].extend(containers_to_move);
     }
 
@@ -102,9 +116,10 @@ mod tests {
     use super::parse_input;
 
     const INPUT_LINES: &'static [&'static str] = &[
-        "0D0",
-        "NC0",
-        "ZMP",
+        "    [D]    ",
+        "[N] [C]    ",
+        "[Z] [M] [P]",
+        " 1   2   3 ",
         "",
         "move 1 from 2 to 1",
         "move 3 from 1 to 3",
