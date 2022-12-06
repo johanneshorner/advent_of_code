@@ -3,6 +3,7 @@ mod day2;
 mod day3;
 mod day4;
 mod day5;
+mod day6;
 
 use std::fs::File;
 use std::io::{self, BufRead};
@@ -20,6 +21,7 @@ fn main() {
         "day3" => day3::run,
         "day4" => day4::run,
         "day5" => day5::run,
+        "day6" => day6::run,
         _ => panic!("Day not found!"),
     };
 
