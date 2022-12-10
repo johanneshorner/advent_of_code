@@ -1,8 +1,8 @@
 pub fn run(input_lines: &[&str]) {
     let input = parse_input(input_lines);
 
-    println!("Part1: {}", part1(&input));
-    println!("Part2: {}", part2(&input));
+    println!("Part1:\n{}", part1(&input));
+    println!("Part2:\n{}", part2(&input));
 }
 
 fn parse_input(input_lines: &[&str]) -> Vec<Vec<usize>> {
