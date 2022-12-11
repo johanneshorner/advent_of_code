@@ -21,9 +21,11 @@ struct Test {
     monkey_false: usize,
 }
 
+use std::cell::RefCell;
+
 #[derive(Debug, Clone)]
 struct Monkey {
-    items: VecDeque<usize>,
+    items: RefCell<VecDeque<usize>>,
     operation: Operation,
     test: Test,
 }
@@ -98,7 +100,7 @@ fn parse_input(input_lines: &[&str]) -> Vec<Monkey> {
             };
 
             Monkey {
-                items,
+                items: RefCell::new(items),
                 operation,
                 test,
             }
@@ -108,14 +110,16 @@ fn parse_input(input_lines: &[&str]) -> Vec<Monkey> {
 
 fn part1(monkeys: Vec<Monkey>) -> usize {
     let mut monkey_inspects = vec![0 as usize; monkeys.len()];
-    let mut monkeys = monkeys;
 
     for _ in 0..20 {
-        for i in 0..monkeys.len() {
-            for _ in 0..monkeys[i].items.len() {
-                let mut worry_lvl = monkeys[i].items.pop_front().unwrap();
+        for (i, monkey) in monkeys.iter().enumerate() {
+            let item_count = monkey.items.borrow().len();
+            for _ in 0..item_count {
+                let mut worry_lvl = monkey.items.borrow_mut().pop_front().unwrap();
+
                 monkey_inspects[i] += 1;
-                worry_lvl = match monkeys[i].operation {
+
+                worry_lvl = match monkey.operation {
                     Operation::Square => worry_lvl * worry_lvl,
                     Operation::Multiply(value) => worry_lvl * value,
                     Operation::Add(value) => worry_lvl + value,
@@ -123,13 +127,13 @@ fn part1(monkeys: Vec<Monkey>) -> usize {
 
                 worry_lvl = worry_lvl / 3;
 
-                let monkey_index = if worry_lvl % monkeys[i].test.divisor != 0 {
-                    monkeys[i].test.monkey_false
+                let monkey_index = if worry_lvl % monkey.test.divisor != 0 {
+                    monkey.test.monkey_false
                 } else {
-                    monkeys[i].test.monkey_true
+                    monkey.test.monkey_true
                 };
 
-                monkeys[monkey_index].items.push_back(worry_lvl);
+                monkeys[monkey_index].items.borrow_mut().push_back(worry_lvl);
             }
         }
     }
@@ -143,7 +147,6 @@ fn part1(monkeys: Vec<Monkey>) -> usize {
 
 fn part2(monkeys: Vec<Monkey>) -> usize {
     let mut monkey_inspects = vec![0 as usize; monkeys.len()];
-    let mut monkeys = monkeys;
 
     let big_divisor = monkeys
         .iter()
@@ -152,12 +155,14 @@ fn part2(monkeys: Vec<Monkey>) -> usize {
         .unwrap();
 
     for _ in 0..10000 {
-        for i in 0..monkeys.len() {
-            for _ in 0..monkeys[i].items.len() {
-                let mut worry_lvl = monkeys[i].items.pop_front().unwrap();
+        for (i, monkey) in monkeys.iter().enumerate() {
+            let item_count = monkey.items.borrow().len();
+            for _ in 0..item_count {
+                let mut worry_lvl = monkey.items.borrow_mut().pop_front().unwrap();
+
                 monkey_inspects[i] += 1;
 
-                worry_lvl = match monkeys[i].operation {
+                worry_lvl = match monkey.operation {
                     Operation::Square => worry_lvl * worry_lvl,
                     Operation::Multiply(value) => worry_lvl * value,
                     Operation::Add(value) => worry_lvl + value,
@@ -165,13 +170,13 @@ fn part2(monkeys: Vec<Monkey>) -> usize {
 
                 worry_lvl = worry_lvl % big_divisor;
 
-                let monkey_index = if worry_lvl % monkeys[i].test.divisor != 0 {
-                    monkeys[i].test.monkey_false
+                let monkey_index = if worry_lvl % monkey.test.divisor != 0 {
+                    monkey.test.monkey_false
                 } else {
-                    monkeys[i].test.monkey_true
+                    monkey.test.monkey_true
                 };
 
-                monkeys[monkey_index].items.push_back(worry_lvl);
+                monkeys[monkey_index].items.borrow_mut().push_back(worry_lvl);
             }
         }
     }
