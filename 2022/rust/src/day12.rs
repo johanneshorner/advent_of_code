@@ -80,7 +80,7 @@ fn parse_input(input_lines: &[&str]) -> (Vec<Node>, Node, Node) {
 
 fn part1(input: &(Vec<Node>, Node, Node)) -> usize {
     let (nodes, start, end) = input;
-    let (path, _) = pathfinding::directed::dijkstra::dijkstra(
+    let path = pathfinding::directed::bfs::bfs(
         &start,
         |&node| {
             let mut neighbours = Vec::new();
@@ -91,7 +91,7 @@ fn part1(input: &(Vec<Node>, Node, Node)) -> usize {
                     && node.y == other_node.y
                     && (other_node.height as isize - node.height as isize) <= 1
             }) {
-                neighbours.push((next_node, 1));
+                neighbours.push(next_node);
             }
 
             //down
@@ -100,7 +100,7 @@ fn part1(input: &(Vec<Node>, Node, Node)) -> usize {
                     && node.y == other_node.y
                     && (other_node.height as isize - node.height as isize) <= 1
             }) {
-                neighbours.push((next_node, 1));
+                neighbours.push(next_node);
             }
 
             //left
@@ -109,7 +109,7 @@ fn part1(input: &(Vec<Node>, Node, Node)) -> usize {
                     && node.y == other_node.y - 1
                     && (other_node.height as isize - node.height as isize) <= 1
             }) {
-                neighbours.push((next_node, 1));
+                neighbours.push(next_node);
             }
 
             //up
@@ -118,7 +118,7 @@ fn part1(input: &(Vec<Node>, Node, Node)) -> usize {
                     && node.y == other_node.y + 1
                     && (other_node.height as isize - node.height as isize) <= 1
             }) {
-                neighbours.push((next_node, 1));
+                neighbours.push(next_node);
             }
 
             neighbours
@@ -136,7 +136,7 @@ fn part2(input: &(Vec<Node>, Node, Node)) -> usize {
     let starting_points = nodes.iter().filter(|node| node.height == 1);
 
     starting_points.map(|start| {
-        let result = pathfinding::directed::dijkstra::dijkstra(
+        let result = pathfinding::directed::bfs::bfs(
             &start,
             |&node| {
                 let mut neighbours = Vec::new();
@@ -147,7 +147,7 @@ fn part2(input: &(Vec<Node>, Node, Node)) -> usize {
                         && node.y == other_node.y
                         && (other_node.height as isize - node.height as isize) <= 1
                 }) {
-                    neighbours.push((next_node, 1));
+                    neighbours.push(next_node);
                 }
 
                 //down
@@ -156,7 +156,7 @@ fn part2(input: &(Vec<Node>, Node, Node)) -> usize {
                         && node.y == other_node.y
                         && (other_node.height as isize - node.height as isize) <= 1
                 }) {
-                    neighbours.push((next_node, 1));
+                    neighbours.push(next_node);
                 }
 
                 //left
@@ -165,7 +165,7 @@ fn part2(input: &(Vec<Node>, Node, Node)) -> usize {
                         && node.y == other_node.y - 1
                         && (other_node.height as isize - node.height as isize) <= 1
                 }) {
-                    neighbours.push((next_node, 1));
+                    neighbours.push(next_node);
                 }
 
                 //up
@@ -174,7 +174,7 @@ fn part2(input: &(Vec<Node>, Node, Node)) -> usize {
                         && node.y == other_node.y + 1
                         && (other_node.height as isize - node.height as isize) <= 1
                 }) {
-                    neighbours.push((next_node, 1));
+                    neighbours.push(next_node);
                 }
 
                 neighbours
@@ -182,7 +182,7 @@ fn part2(input: &(Vec<Node>, Node, Node)) -> usize {
             |&node| node == end,
         );
 
-        if let Some((path, _)) = result {
+        if let Some(path) = result {
             path.len() - 1
         } else {
             usize::MAX
