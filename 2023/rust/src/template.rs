@@ -25,20 +25,19 @@ fn main() {
 mod tests {
     use super::*;
 
-    const PART1_INPUT: &str = "";
-    const PART2_INPUT: &str = "";
+    const INPUT: &str = "";
     const PART1_SOLUTION: u32 = 0;
     const PART2_SOLUTION: u32 = 1;
 
     #[test]
     fn test_part1() {
-        let input = parse_input(PART1_INPUT);
+        let input = parse_input(INPUT);
         assert_eq!(part1(input), PART1_SOLUTION);
     }
 
     #[test]
     fn test_part2() {
-        let input = parse_input(PART2_INPUT);
+        let input = parse_input(INPUT);
         assert_eq!(part2(input), PART2_SOLUTION);
     }
 }
