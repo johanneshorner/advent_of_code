@@ -11,25 +11,17 @@ fn is_symbol(c: char) -> bool {
 
 impl Number {
     fn is_part_number(&self, schematic: &Vec<Vec<char>>) -> bool {
-        println!("{self:?}");
-
-        let ret = is_symbol(schematic[self.y][self.x - 1])
+        is_symbol(schematic[self.y][self.x - 1])
             || is_symbol(schematic[self.y][self.x + self.value.len()])
             || schematic[self.y - 1][self.x - 1..self.x + self.value.len() + 1]
                 .iter()
                 .any(|c| is_symbol(*c))
             || schematic[self.y + 1][self.x - 1..self.x + self.value.len() + 1]
                 .iter()
-                .any(|c| is_symbol(*c));
-
-        println!("ret: {ret}");
-
-        ret
+                .any(|c| is_symbol(*c))
     }
 
     fn find_gear_coords(&self, schematic: &Vec<Vec<char>>) -> Option<(usize, usize)> {
-        println!("{self:?}");
-
         if schematic[self.y][self.x - 1] == '*' {
             return Some((self.x - 1, self.y));
         } else if schematic[self.y][self.x + self.value.len()] == '*' {

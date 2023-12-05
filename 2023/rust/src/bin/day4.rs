@@ -47,8 +47,6 @@ fn part1(input: Input) -> Output {
                     .is_some()
             })
             .count();
-        println!("{game:?}");
-        println!("{matches}");
         if matches > 0 {
             sum = sum + 2u32.pow(matches as u32 - 1);
         }
