@@ -29,7 +29,6 @@ fn parse_input(input: &str) -> Input {
             Game { id, rounds }
         })
         .collect::<Vec<_>>();
-    println!("{input:?}");
     input
 }
 

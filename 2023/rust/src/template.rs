@@ -1,8 +1,8 @@
-type Input = Vec<u32>;
-type Output = u32;
+type Input = Vec<i32>;
+type Output = i32;
 
 fn parse_input(input: &str) -> Input {
-    let input = input.trim().split('\n').collect::<Vec<_>>();
+    let input = input.lines().collect::<Vec<_>>();
     println!("{input:?}");
     vec![0]
 }
@@ -16,7 +16,7 @@ fn part2(input: Input) -> Output {
 }
 
 fn main() {
-    let input = parse_input(include_str!("../../../input/day1.in"));
+    let input = parse_input(include_str!("../../../input/day.in"));
     println!("Part 1: {}", part1(input.clone()));
     println!("Part 2: {}", part2(input));
 }
@@ -26,8 +26,8 @@ mod tests {
     use super::*;
 
     const INPUT: &str = "";
-    const PART1_SOLUTION: u32 = 0;
-    const PART2_SOLUTION: u32 = 1;
+    const PART1_SOLUTION: Output = 0;
+    const PART2_SOLUTION: Output = 1;
 
     #[test]
     fn test_part1() {
