@@ -32,16 +32,16 @@ struct Card(char);
 
 lazy_static! {
     static ref ORDERING: HashMap<char, i32> = HashMap::from([
-        ('2', 0),
-        ('3', 1),
-        ('4', 2),
-        ('5', 3),
-        ('6', 4),
-        ('7', 5),
-        ('8', 6),
-        ('9', 7),
-        ('T', 8),
-        ('J', 9),
+        ('J', 0),
+        ('2', 1),
+        ('3', 2),
+        ('4', 3),
+        ('5', 4),
+        ('6', 5),
+        ('7', 6),
+        ('8', 7),
+        ('9', 8),
+        ('T', 9),
         ('Q', 10),
         ('K', 11),
         ('A', 12),
@@ -88,17 +88,24 @@ fn parse_input(input: &str) -> Input {
         .map(|line| {
             let (cards, bid) = line.split_once(' ').unwrap();
 
-            let mut map = HashMap::new();
-
-            for card in cards.chars() {
-                match map.entry(card) {
-                    Occupied(mut entry) => *entry.get_mut() += 1,
-                    Vacant(entry) => _ = entry.insert(1),
-                }
+            let mut counts = cards.chars().counts();
+            if let (Some(joker_count), Some(entry)) = (
+                counts.get(&'J').cloned(),
+                counts
+                    .iter_mut()
+                    .filter(|(key, _)| **key != 'J')
+                    .max_by(|(_, a), (_, b)| a.cmp(b)),
+            ) {
+                *entry.1 += joker_count;
+                counts.remove(&'J');
             }
 
             use HandType::*;
-            let r#type = match map.values().sorted_by(|a, b| b.cmp(a)).collect::<Vec<_>>()[..] {
+            let r#type = match counts
+                .values()
+                .sorted_by(|a, b| b.cmp(a))
+                .collect::<Vec<_>>()[..]
+            {
                 [5] => FiveKind,
                 [4, _] => FourKind,
                 [3, 2] => FullHouse,
@@ -128,12 +135,17 @@ fn part1(input: Input) -> Output {
 }
 
 fn part2(input: Input) -> Output {
-    1
+    input
+        .iter()
+        .sorted()
+        .enumerate()
+        .map(|(i, hand)| (i as i32 + 1) * hand.bid)
+        .sum()
 }
 
 fn main() {
     let input = parse_input(include_str!("../../../input/day7.in"));
-    println!("Part 1: {}", part1(input.clone()));
+    // println!("Part 1: {}", part1(input.clone()));
     println!("Part 2: {}", part2(input));
 }
 
@@ -147,7 +159,7 @@ KK677 28
 KTJJT 220
 QQQJA 483";
     const PART1_SOLUTION: Output = 6440;
-    const PART2_SOLUTION: Output = 1;
+    const PART2_SOLUTION: Output = 5905;
 
     #[test]
     fn test_part1() {
