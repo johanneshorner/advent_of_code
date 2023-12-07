@@ -1,23 +1,82 @@
+use lazy_static::lazy_static;
 use std::collections::{hash_map::Entry::*, HashMap};
 
 use itertools::Itertools;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 enum HandType {
-    FiveKind,
-    FourKind,
-    FullHouse,
-    ThreeKind,
-    TwoPair,
-    OnePair,
-    HighCard,
+    HighCard = 0,
+    OnePair = 1,
+    TwoPair = 2,
+    ThreeKind = 3,
+    FullHouse = 4,
+    FourKind = 5,
+    FiveKind = 6,
 }
 
-#[derive(Debug, Clone)]
+impl Ord for HandType {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        let other = other.clone() as u8;
+        (self.clone() as u8).cmp(&other)
+    }
+}
+
+impl PartialOrd for HandType {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct Card(char);
+
+lazy_static! {
+    static ref ORDERING: HashMap<char, i32> = HashMap::from([
+        ('2', 0),
+        ('3', 1),
+        ('4', 2),
+        ('5', 3),
+        ('6', 4),
+        ('7', 5),
+        ('8', 6),
+        ('9', 7),
+        ('T', 8),
+        ('J', 9),
+        ('Q', 10),
+        ('K', 11),
+        ('A', 12),
+    ]);
+}
+
+impl Ord for Card {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        ORDERING[&self.0].cmp(&ORDERING[&other.0])
+    }
+}
+
+impl PartialOrd for Card {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct Hand {
-    cards: Vec<char>,
+    cards: Vec<Card>,
     r#type: HandType,
     bid: i32,
+}
+
+impl Ord for Hand {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        (&self.r#type, &self.cards).cmp(&(&other.r#type, &other.cards))
+    }
+}
+
+impl PartialOrd for Hand {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 type Input = Vec<Hand>;
@@ -50,7 +109,7 @@ fn parse_input(input: &str) -> Input {
             };
 
             Hand {
-                cards: cards.chars().collect::<Vec<_>>(),
+                cards: cards.chars().map(Card).collect::<Vec<_>>(),
                 r#type,
                 bid: bid.parse::<i32>().unwrap(),
             }
@@ -60,8 +119,12 @@ fn parse_input(input: &str) -> Input {
 }
 
 fn part1(input: Input) -> Output {
-    println!("{input:?}");
-    0
+    input
+        .iter()
+        .sorted()
+        .enumerate()
+        .map(|(i, hand)| (i as i32 + 1) * hand.bid)
+        .sum()
 }
 
 fn part2(input: Input) -> Output {
