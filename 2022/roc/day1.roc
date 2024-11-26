@@ -4,12 +4,9 @@ import pf.Stdout
 
 import "./../input/day1.txt" as input : Str
 
-result1 = part1 input
-result2 = part2 input
-
 main =
-    Stdout.line!
-        "$(Num.toStr result1)\n$(Num.toStr result2)"
+    Stdout.line! (part1 input |> Num.toStr)
+    Stdout.line! (part2 input |> Num.toStr)
 
 part1 = \in ->
     in
