@@ -1,10 +1,24 @@
 #!/usr/bin/env nu
 
-def main [year, day] {
-    let file_url = $"https://adventofcode.com/($year)/day/($day)/input"
-    let file_path = $"./($year)/input/day($day).txt"
+def main [year, days, --force] {
+    if ($days | describe) == "range" {
 
-    let content = http get --headers [Cookie $"session=($env.AOC_TOKEN)"] $file_url
-    mkdir input
-    $content | save $file_path
+    }
+    match ($days | describe) {
+        "int" => { download_input $year $days --force=$force },
+        "range" => { for day in $days { download_input $year $day --force=$force } }
+        _ => { panic $"type ($days | describe) is not supported" }
+    }
+}
+
+def download_input [year, day, --force] {
+    let file_url = $"https://adventofcode.com/($year)/day/($day)/input"
+    let directory_path = $"./($year)/input/"
+    let file_path = $directory_path | path join $"day($day).txt"
+
+    if $force or not ($file_path | path exists) {
+        let content = http get --headers [Cookie $"session=($env.AOC_TOKEN)"] $file_url
+        mkdir $directory_path
+        $content | save $file_path --force=$force
+    }
 }
