@@ -1,0 +1,10 @@
+#!/usr/bin/env nu
+
+def main [year, day] {
+    let file_url = $"https://adventofcode.com/($year)/day/($day)/input"
+    let file_path = $"./($year)/input/day($day).txt"
+
+    let content = http get --headers [Cookie $"session=($env.AOC_TOKEN)"] $file_url
+    mkdir input
+    $content | save $file_path
+}
