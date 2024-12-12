@@ -1,20 +1,20 @@
 #[derive(Debug, Clone)]
 pub struct Grid<T>(Vec<Vec<T>>);
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Point {
-    pub x: usize,
-    pub y: usize,
+    pub x: isize,
+    pub y: isize,
 }
 
-impl From<(usize, usize)> for Point {
-    fn from((x, y): (usize, usize)) -> Self {
+impl From<(isize, isize)> for Point {
+    fn from((x, y): (isize, isize)) -> Self {
         Point { x, y }
     }
 }
 
-impl From<&(usize, usize)> for Point {
-    fn from((x, y): &(usize, usize)) -> Self {
+impl From<&(isize, isize)> for Point {
+    fn from((x, y): &(isize, isize)) -> Self {
         Point { x: *x, y: *y }
     }
 }
@@ -28,10 +28,24 @@ impl<T> Grid<T> {
         (0..self.width())
             .flat_map(|y| {
                 (0..self.height())
-                    .map(|x| Point { x, y })
+                    .map(|x| Point {
+                        x: x as isize,
+                        y: y as isize,
+                    })
                     .collect::<Vec<Point>>()
             })
             .collect()
+    }
+
+    pub fn flattened(&self) -> Vec<&T> {
+        let mut vec = Vec::with_capacity(self.width() * self.height());
+        for y in 0..self.height() {
+            for x in 0..self.width() {
+                vec.push(self.get(x as isize, y as isize).unwrap());
+            }
+        }
+
+        vec
     }
 
     pub fn height(&self) -> usize {
@@ -49,9 +63,9 @@ impl<T> Grid<T> {
             && (0..self.height()).contains(&(y as usize))
     }
 
-    pub fn get(&self, x: usize, y: usize) -> Option<&T> {
-        if self.is_inbounds(x as isize, y as isize) {
-            Some(&self.0[y][x])
+    pub fn get(&self, x: isize, y: isize) -> Option<&T> {
+        if self.is_inbounds(x, y) {
+            Some(&self.0[y as usize][x as usize])
         } else {
             None
         }
@@ -59,38 +73,6 @@ impl<T> Grid<T> {
 
     pub fn get_unchecked(&self, x: usize, y: usize) -> &T {
         &self.0[y][x]
-    }
-
-    pub fn left(&self, x: usize, y: usize) -> Option<&T> {
-        self.get(x - 1, y)
-    }
-
-    pub fn left_up(&self, x: usize, y: usize) -> Option<&T> {
-        self.get(x - 1, y - 1)
-    }
-
-    pub fn up(&self, x: usize, y: usize) -> Option<&T> {
-        self.get(x, y - 1)
-    }
-
-    pub fn right_up(&self, x: usize, y: usize) -> Option<&T> {
-        self.get(x + 1, y - 1)
-    }
-
-    pub fn right(&self, x: usize, y: usize) -> Option<&T> {
-        self.get(x + 1, y)
-    }
-
-    pub fn right_down(&self, x: usize, y: usize) -> Option<&T> {
-        self.get(x + 1, y + 1)
-    }
-
-    pub fn down(&self, x: usize, y: usize) -> Option<&T> {
-        self.get(x, y + 1)
-    }
-
-    pub fn left_down(&self, x: usize, y: usize) -> Option<&T> {
-        self.get(x - 1, y + 1)
     }
 
     pub fn neighbour_coords(&self, x: usize, y: usize) -> Vec<Point> {
@@ -104,7 +86,7 @@ impl<T> Grid<T> {
         ]
         .iter()
         .filter(|(x, y)| self.is_inbounds(*x, *y))
-        .map(|(x, y)| (*x as usize, *y as usize).into())
+        .map(Into::into)
         .collect::<Vec<Point>>()
     }
 
@@ -123,7 +105,7 @@ impl<T> Grid<T> {
         ]
         .iter()
         .filter(|(x, y)| self.is_inbounds(*x, *y))
-        .map(|(x, y)| (*x as usize, *y as usize).into())
+        .map(Into::into)
         .collect::<Vec<Point>>()
     }
 }
